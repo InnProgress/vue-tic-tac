@@ -1,28 +1,49 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <p><strong>{{ turn }}</strong> turn</p>
+    <board />
+    <reset-button />
+    <leader-board />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Board from './components/Board.vue'
+import LeaderBoard from './components/Leaderboard.vue'
+import ResetButton from './components/ResetButton.vue'
+import { mapState } from 'vuex'
 
 export default {
-  name: 'app',
   components: {
-    HelloWorld
+    Board,
+    LeaderBoard,
+    ResetButton
+  },
+  computed: {
+    ...mapState([
+      'turn'
+    ])
   }
 }
 </script>
 
 <style lang="scss">
+body {
+  background-image: url('assets/bg.jpg');
+  font-family: 'Open Sans', sans-serif;
+}
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  background-color: white;
+  width: 310px;
+  padding: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 10px;
 }
 </style>
