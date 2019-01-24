@@ -15,7 +15,9 @@ export default new Vuex.Store({
     wins: {
       O: 0,
       X: 0
-    }
+    },
+    npcMode: null,
+    loading: false
   },
   mutations: {
     switchPlayer(state) {
@@ -38,6 +40,12 @@ export default new Vuex.Store({
     },
     updateWinsData(state) {
       state.wins[state.turn] ++;
+    },
+    setGameMode(state, type) {
+      state.npcMode = type;
+    },
+    setLoad(state, bool) {
+      state.loading = bool;
     }
   },
   actions: {
@@ -57,24 +65,65 @@ export default new Vuex.Store({
       it[1] !== null && it[1] === it[4] && it[1] === it[7] ||
       it[2] !== null && it[2] === it[5] && it[2] === it[8] ) {
         dispatch('win');
+        return;
       }
+
+      if(!it.includes(null)) dispatch('draw');
     },
     win({ commit, state }) {
       commit('updateWinsData');
       commit('switchGameStatus', false);
-      Vue.prototype.$awn.confirm(state.turn + " have won. Your can reset game and play another one time", () => {
+      Vue.prototype.$awn.confirm(state.turn + " have won. Your can reset game and play another one", () => {
         commit('resetGame');
       });
     },
-    fieldClick({ state, dispatch }, index) {
-      if(state.gameStarted === false) {
+    draw({ commit }) {
+      commit('switchGameStatus', false);
+      Vue.prototype.$awn.confirm("Looks like it is draw. Your can reset game and play another one", () => {
+        commit('resetGame');
+      });
+    },
+    fieldClick({ state, commit, dispatch }, index) {
+      if(state.gameStarted === false || state.loading) {
         return;
       }
       if(state.board[index] === null) {
         var audio = new Audio(require('@/assets/sounds/click.mp3'));
         audio.play();
         dispatch('changeField', index);
+
+        if(state.npcMode && state.gameStarted) { // NPC actions
+          commit('setLoad', true);
+          setTimeout(function() {
+            dispatch('npcAction')
+          }, 1200);
+        }
       }
+    },
+    npcAction({ dispatch, state, commit }) {
+      let freeFields = [];
+      for(let i = 0; i < state.board.length; i ++) {
+        if(state.board[i] === null) {
+          freeFields.push(i);
+        }
+      }
+
+      let newField = Math.floor(Math.random() * freeFields.length);
+
+      dispatch('changeField', freeFields[newField]);
+      commit('setLoad', false);
+    },
+    endGame({ commit }) {
+      commit('resetGame');
+      commit('setGameMode', null);
+    }
+  },
+  getters: {
+    gameMode(state) {
+      let mode;
+      if(state.npcMode) mode = "1 vs. NPC";
+      else if(!state.npcMode) mode = "1 vs. 1";
+      return mode;
     }
   }
 })

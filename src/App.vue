@@ -1,28 +1,20 @@
 <template>
   <div id="app">
-    <p><strong>{{ turn }}</strong> turn</p>
-    <board />
-    <reset-button />
-    <leader-board />
+    <transition name="fade" mode="out-in">
+      <mode-select v-if="$store.state.npcMode === null" />
+      <main-game v-else />
+    </transition>
   </div>
 </template>
 
 <script>
-import Board from './components/Board.vue'
-import LeaderBoard from './components/Leaderboard.vue'
-import ResetButton from './components/ResetButton.vue'
-import { mapState } from 'vuex'
+import ModeSelect from './components/ModeSelect.vue'
+import MainGame from './components/MainGame.vue'
 
 export default {
   components: {
-    Board,
-    LeaderBoard,
-    ResetButton
-  },
-  computed: {
-    ...mapState([
-      'turn'
-    ])
+    ModeSelect,
+    MainGame
   }
 }
 </script>
@@ -45,5 +37,11 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 10px;
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>

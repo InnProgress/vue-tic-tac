@@ -9,7 +9,7 @@ Vue.use(VueAWN, {
     cancelLabel: 'Just show board'
   },
   labels: {
-    confirm: 'WIN'
+    confirm: 'Ohh'
   }
 })
 
